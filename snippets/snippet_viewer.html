@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Snippets - Prime Tools Hub</title>
+  <meta name="description" content="Select and copy code snippets easily. Only .txt files supported.">
+  <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    select, button.copy {
+      padding: 10px 15px;
+      font-size: 1em;
+      font-weight: bold;
+    }
+    textarea {
+      width: 90%;
+      height: 300px;
+      font-family: monospace;
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+    a.top-link {
+      display: block;
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    a.top-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>View Snippets</h1>
+
+  <div class="controls">
+    <select id="snippet-select">
+      <option>Loading...</option>
+    </select>
+    <button class="copy" onclick="copySnippet()">Copy!</button>
+  </div>
+
+  <textarea id="snippet-box" readonly>Snippet content will be displayed here.</textarea>
+
+  <a href="../index.html" class="top-link">← Back to Top</a>
+
+  <script>
+    const select = document.getElementById('snippet-select');
+    const textarea = document.getElementById('snippet-box');
+
+    fetch('https://api.github.com/repos/StreamEdgeTech/PrimeToolsHub/contents/snippets')
+      .then(res => res.json())
+      .then(data => {
+        select.innerHTML = '';
+        const txtFiles = data.filter(file => file.name.endsWith('.txt'));
+        txtFiles.forEach(file => {
+          const option = document.createElement('option');
+          option.value = file.download_url;
+          option.textContent = file.name;
+          select.appendChild(option);
+        });
+        if (txtFiles[0]) loadSnippet(txtFiles[0].download_url);
+      });
+
+    select.addEventListener('change', () => {
+      if (select.value) loadSnippet(select.value);
+    });
+
+    function loadSnippet(url) {
+      fetch(url)
+        .then(res => res.text())
+        .then(txt => {
+          textarea.value = txt;
+        })
+        .catch(err => {
+          textarea.value = 'Failed to load snippet.';
+          console.error(err);
+        });
+    }
+
+    function copySnippet() {
+      textarea.select();
+      document.execCommand("copy");
+      alert("Copied!");
+    }
+  </script>
+
+</body>
+</html>
