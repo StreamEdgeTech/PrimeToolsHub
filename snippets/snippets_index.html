@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スニペット置き場 - Prime Tools Hub</title>
+  <meta name="description" content="Prime Tools Hubのコードスニペット置き場ページです。業務効率化用のコード片を簡単に利用できます。">
+  <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      margin: 0;
+    }
+    h1 {
+      color: #333;
+      font-size: 2em;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+    }
+    a {
+      text-decoration: none;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #999;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>コードスニペット置き場</h1>
+  <p>Prime Tools Hubが提供する業務効率化用コードスニペット一覧です。</p>
+
+  <ul id="snippet-list">
+    <li>スニペットリストを読み込み中...</li>
+  </ul>
+
+  <footer>
+    <p><a href="../index.html">← トップページに戻る</a></p>
+  </footer>
+
+  <script>
+    fetch('https://api.github.com/repos/StreamEdgeTech/PrimeToolsHub/contents/snippets')
+      .then(response => response.json())
+      .then(data => {
+        const list = document.getElementById('snippet-list');
+        list.innerHTML = '';
+        data.forEach(file => {
+          if (file.name !== 'index.html' && file.name !== 'README.md') {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = file.download_url;
+            a.target = '_blank';
+            a.textContent = file.name;
+            li.appendChild(a);
+            list.appendChild(li);
+          }
+        });
+      })
+      .catch(error => {
+        const list = document.getElementById('snippet-list');
+        list.innerHTML = '<li>スニペットリストの取得に失敗しました。</li>';
+        console.error(error);
+      });
+  </script>
+
+</body>
+</html>
